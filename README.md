@@ -1,2 +1,2 @@
 # iOSWrappers
-Basic components for iOS development
+Basic components and UI elements for iOS development
