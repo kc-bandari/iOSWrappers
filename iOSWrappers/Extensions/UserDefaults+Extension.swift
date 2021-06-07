@@ -24,6 +24,22 @@ extension UserDefaults {
         }
     }
     
+    func getFontFor(_ key: String) -> UIFont? {
+        if let data = data(forKey: key) {
+            return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIFont
+        }
+        return nil
+    }
+    
+    func setFont(_ font: UIFont?, for key: String) {
+        if let c = font {
+            do {
+                let data = try NSKeyedArchiver.archivedData(withRootObject: c, requiringSecureCoding: false) as NSData?
+                set(data, forKey: key)
+            } catch {}
+        }
+    }
+    
     func getDoubleFor(_ key: String) -> Double {
         return UserDefaults.standard.double(forKey: key)
     }

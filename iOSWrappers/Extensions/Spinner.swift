@@ -11,6 +11,7 @@ fileprivate enum indicatorTags: Int {
     case overlayViewTag
     case indicatorViewTag
     case activityIndicatorViewTag
+    case messageLabelTag
 }
 
 fileprivate enum defaultsKeys: String {
@@ -20,6 +21,8 @@ fileprivate enum defaultsKeys: String {
     case indicatorBackgroundColor = "INDICATORVIEW_COLOR"
     case indicatorBackgroundAlpha = "INDICATORVIEW_ALPHA"
     case indicatorColor = "INDICATOR_COLOR"
+    case messageColor = "MESSAGE_COLOR"
+    case messageFont = "MESSAGE_FONT"
 }
 
 //MARK: - Loader tags
@@ -62,6 +65,19 @@ extension UIView {
         return view
     }
     
+    var lblMessage: UILabel {
+        let label = UILabel()
+        label.lineBreakMode = .byWordWrapping
+        label.backgroundColor = .clear
+        label.textColor = UserDefaults.standard.getColorFor(defaultsKeys.messageColor.rawValue) ?? .white
+        label.font = UserDefaults.standard.getFontFor(defaultsKeys.messageFont.rawValue) ?? UIFont.boldSystemFont(ofSize: 12.0)
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.tag = indicatorTags.messageLabelTag.rawValue
+        return label
+    }
+    
     //MARK: - Private Methods
     private func getContainer() -> UIView? {
         viewWithTag(indicatorTags.containerViewTag.rawValue)
@@ -75,17 +91,22 @@ extension UIView {
         getActivityIndicatorView() != nil && getContainer() != nil
     }
 
-    private func setActivityIndicatorView() {
+    private func setActivityIndicatorView(message: String = "") {
         guard !isDisplayingActivityIndicatorOverlay() else { return }
         
         let containerView = self.containerView
         let overlayView: UIView = self.overlayView
         let indicatorView: UIView = self.indicatorView
         let activityIndicatorView: UIActivityIndicatorView = self.activityIndicatorView
+        let messageLabel = self.lblMessage
+        
+        messageLabel.numberOfLines = 1
+        messageLabel.text = message
         
         containerView.addSubview(overlayView)
         containerView.addSubview(indicatorView)
         containerView.addSubview(activityIndicatorView)
+        containerView.addSubview(messageLabel)
         addSubview(containerView)
         
         containerView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
@@ -96,14 +117,41 @@ extension UIView {
         overlayView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
         overlayView.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
         
+        activityIndicatorView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
+        activityIndicatorView.topAnchor.constraint(equalTo: indicatorView.topAnchor, constant: 20).isActive = true
+        
         indicatorView.centerXAnchor.constraint(equalTo: overlayView.centerXAnchor, constant: 0).isActive = true
         indicatorView.centerYAnchor.constraint(equalTo: overlayView.centerYAnchor, constant: 0).isActive = true
-        indicatorView.heightAnchor.constraint(equalToConstant: 84.0).isActive = true
-        indicatorView.addConstraint(NSLayoutConstraint(item: indicatorView, attribute: .height, relatedBy: .equal, toItem: indicatorView, attribute: .width, multiplier: 1, constant: 0))
         
-        activityIndicatorView.centerXAnchor.constraint(equalTo: indicatorView.centerXAnchor).isActive = true
-        activityIndicatorView.centerYAnchor.constraint(equalTo: indicatorView.centerYAnchor).isActive = true
+        if message.count > 0 {
+            indicatorView.leadingAnchor.constraint(greaterThanOrEqualTo: overlayView.leadingAnchor, constant: 20.0).isActive = true
+            
+            messageLabel.centerXAnchor.constraint(equalTo: overlayView.centerXAnchor, constant: 0).isActive = true
+            messageLabel.topAnchor.constraint(equalTo: activityIndicatorView.bottomAnchor, constant: 14.0).isActive = true
+            
+            indicatorView.bottomAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 20.0).isActive = true
+            messageLabel.leadingAnchor.constraint(equalTo: indicatorView.leadingAnchor, constant: 20).isActive  = true
+        } else {
+            activityIndicatorView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+            
+            indicatorView.leadingAnchor.constraint(equalTo: activityIndicatorView.leadingAnchor, constant: -20).isActive  = true
+            indicatorView.addConstraint(NSLayoutConstraint(item: indicatorView, attribute: .height, relatedBy: .equal, toItem: indicatorView, attribute: .width, multiplier: 1, constant: 0))
+        }
+        
         activityIndicatorView.startAnimating()
+    }
+    
+    private func updateMessage(_ message: String?) {
+        guard let msg = message, msg.count > 0 else { return }
+        guard let messageLabel = viewWithTag(indicatorTags.messageLabelTag.rawValue) as? UILabel else { return }
+        UIView.animate(withDuration: 0.2, animations: { () -> Void in
+            messageLabel.transform = .init(scaleX: 1.2, y: 1.2)
+        }) { (finished: Bool) -> Void in
+            messageLabel.text = msg
+            UIView.animate(withDuration: 0.25, animations: { () -> Void in
+                messageLabel.transform = .identity
+            })
+        }
     }
     
     private func removeActivityIndicatorView() {
@@ -120,10 +168,14 @@ extension UIView {
     }
     
     //MARK: - Public Methods
-    func displayAnimatedActivityIndicatorView() {
-        setActivityIndicatorView()
+    func displayAnimatedActivityIndicatorView(message: String = "") {
+        setActivityIndicatorView(message: message)
     }
 
+    func updateMessageOnSpinnerOrToast(_ message: String?) {
+        self.updateMessage(message)
+    }
+    
     func hideAnimatedActivityIndicatorView() {
         removeActivityIndicatorView()
     }
@@ -138,16 +190,18 @@ public extension UIViewController {
     //TODO: - to be implemented - store values in userdefaults
     func configureSpinner(dimmerBackgroundColor: UIColor = .black, dimmerAlpha: Double = 0.5,
                           indicatorViewBackgroundColor: UIColor = .black, indicatorViewAlpha: Double = 0.5, indicatorViewCornerRadius: Double = 10.0,
-                          indicatorColor: UIColor = .white) {
+                          indicatorColor: UIColor = .white,
+                          messageTextColor: UIColor = .white, messageFont: UIFont = UIFont.boldSystemFont(ofSize: 12.0)) {
         UserDefaults.standard.setColor(dimmerBackgroundColor, for: defaultsKeys.dimmerBackgroundColor.rawValue)
         UserDefaults.standard.setDouble(dimmerAlpha, for: defaultsKeys.dimmerAlpha.rawValue)
         UserDefaults.standard.setColor(indicatorViewBackgroundColor, for: defaultsKeys.indicatorBackgroundColor.rawValue)
         UserDefaults.standard.setDouble(indicatorViewAlpha, for: defaultsKeys.indicatorBackgroundAlpha.rawValue)
         UserDefaults.standard.setDouble(indicatorViewCornerRadius, for: defaultsKeys.indicatorCornerRadius.rawValue)
         UserDefaults.standard.setColor(indicatorColor, for: defaultsKeys.indicatorColor.rawValue)
-        
+        UserDefaults.standard.setColor(messageTextColor, for: defaultsKeys.messageColor.rawValue)
+        UserDefaults.standard.setFont(messageFont, for: defaultsKeys.messageFont.rawValue)
         /* TODO: -
-         Label text color and font (Minimum font is 10.0)
+         Set positon for toast message
          Hide toast control tobe given to user (default is 3 seconds)
          */
     }
@@ -163,7 +217,23 @@ public extension UIViewController {
     }
 
     func showLoaderWithMessage(_ message: String) {
-        //TODO: -
+        DispatchQueue.main.async {
+            if(self.tabBarController != nil) {
+                self.tabBarController?.overlayContainerView.displayAnimatedActivityIndicatorView(message: message)
+            } else {
+                self.overlayContainerView.displayAnimatedActivityIndicatorView(message: message)
+            }
+        }
+    }
+    
+    func updateMessageOnSpinnerOrToast(_ message: String?) {
+        DispatchQueue.main.async {
+            if(self.tabBarController != nil) {
+                self.tabBarController?.overlayContainerView.updateMessageOnSpinnerOrToast(message)
+            } else {
+                self.overlayContainerView.updateMessageOnSpinnerOrToast(message)
+            }
+        }
     }
     
     func hideLoader() {
@@ -184,4 +254,3 @@ public extension UIViewController {
         //TODO: -
     }
 }
-
