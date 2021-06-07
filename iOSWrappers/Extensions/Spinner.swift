@@ -13,8 +13,17 @@ fileprivate enum indicatorTags: Int {
     case activityIndicatorViewTag
 }
 
+fileprivate enum defaultsKeys: String {
+    case dimmerBackgroundColor = "DIMMER_COLOR"
+    case dimmerAlpha = "DIMMER_ALPHA"
+    case indicatorCornerRadius = "INDICATORVIEW_CORNER_RADIUS"
+    case indicatorBackgroundColor = "INDICATORVIEW_COLOR"
+    case indicatorBackgroundAlpha = "INDICATORVIEW_ALPHA"
+    case indicatorColor = "INDICATOR_COLOR"
+}
+
 //MARK: - Loader tags
-public extension UIView {
+extension UIView {
     //MARK: - Declarations - Private
     private var containerView: UIView {
         let view: UIView = UIView()
@@ -27,8 +36,8 @@ public extension UIView {
     private var overlayView: UIView {
         let view: UIView = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .black
-        view.alpha = 0.5
+        view.backgroundColor = UserDefaults.standard.getColorFor(defaultsKeys.dimmerBackgroundColor.rawValue) ?? .black
+        view.alpha = CGFloat(UserDefaults.standard.getDoubleFor(defaultsKeys.dimmerAlpha.rawValue))
         view.tag = indicatorTags.overlayViewTag.rawValue
         return view
     }
@@ -38,28 +47,22 @@ public extension UIView {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.tag = indicatorTags.indicatorViewTag.rawValue
         view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.backgroundColor = UserDefaults.standard.getColorFor(defaultsKeys.indicatorBackgroundColor.rawValue) ?? .black
+        view.alpha = CGFloat(UserDefaults.standard.getDoubleFor(defaultsKeys.indicatorBackgroundAlpha.rawValue))
+        view.layer.cornerRadius = CGFloat(UserDefaults.standard.getDoubleFor(defaultsKeys.indicatorCornerRadius.rawValue))
+        
         return view
     }
     
     private var activityIndicatorView: UIActivityIndicatorView {
         let view: UIActivityIndicatorView = UIActivityIndicatorView(style: .large)
-        view.color = .white
+        view.color = UserDefaults.standard.getColorFor(defaultsKeys.indicatorColor.rawValue) ?? .white
         view.translatesAutoresizingMaskIntoConstraints = false
         view.tag = indicatorTags.activityIndicatorViewTag.rawValue
         return view
     }
     
     //MARK: - Private Methods
-    func addShadow(shadowColor: UIColor = UIColor.black, offSet: CGSize = .zero, opacity: Float = 1.0, shadowRadius: CGFloat = 10.0, cornerRadius: CGFloat, fillColor: UIColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.5)) {
-        backgroundColor = fillColor
-        
-        layer.cornerRadius = cornerRadius
-        layer.shadowColor = shadowColor.cgColor
-        layer.shadowOffset = offSet
-        layer.shadowOpacity = opacity
-        layer.shadowRadius = shadowRadius
-    }
-    
     private func getContainer() -> UIView? {
         viewWithTag(indicatorTags.containerViewTag.rawValue)
     }
@@ -97,7 +100,6 @@ public extension UIView {
         indicatorView.centerYAnchor.constraint(equalTo: overlayView.centerYAnchor, constant: 0).isActive = true
         indicatorView.heightAnchor.constraint(equalToConstant: 84.0).isActive = true
         indicatorView.addConstraint(NSLayoutConstraint(item: indicatorView, attribute: .height, relatedBy: .equal, toItem: indicatorView, attribute: .width, multiplier: 1, constant: 0))
-        indicatorView.addShadow(shadowColor: .clear, cornerRadius: 10)        
         
         activityIndicatorView.centerXAnchor.constraint(equalTo: indicatorView.centerXAnchor).isActive = true
         activityIndicatorView.centerYAnchor.constraint(equalTo: indicatorView.centerYAnchor).isActive = true
@@ -133,6 +135,23 @@ public extension UIViewController {
         return navigationView
     }
 
+    //TODO: - to be implemented - store values in userdefaults
+    func configureSpinner(dimmerBackgroundColor: UIColor = .black, dimmerAlpha: Double = 0.5,
+                          indicatorViewBackgroundColor: UIColor = .black, indicatorViewAlpha: Double = 0.5, indicatorViewCornerRadius: Double = 10.0,
+                          indicatorColor: UIColor = .white) {
+        UserDefaults.standard.setColor(dimmerBackgroundColor, for: defaultsKeys.dimmerBackgroundColor.rawValue)
+        UserDefaults.standard.setDouble(dimmerAlpha, for: defaultsKeys.dimmerAlpha.rawValue)
+        UserDefaults.standard.setColor(indicatorViewBackgroundColor, for: defaultsKeys.indicatorBackgroundColor.rawValue)
+        UserDefaults.standard.setDouble(indicatorViewAlpha, for: defaultsKeys.indicatorBackgroundAlpha.rawValue)
+        UserDefaults.standard.setDouble(indicatorViewCornerRadius, for: defaultsKeys.indicatorCornerRadius.rawValue)
+        UserDefaults.standard.setColor(indicatorColor, for: defaultsKeys.indicatorColor.rawValue)
+        
+        /* TODO: -
+         Label text color and font (Minimum font is 10.0)
+         Hide toast control tobe given to user (default is 3 seconds)
+         */
+    }
+    
     func showLoader() {
         DispatchQueue.main.async {
             if(self.tabBarController != nil) {
@@ -143,6 +162,10 @@ public extension UIViewController {
         }
     }
 
+    func showLoaderWithMessage(_ message: String) {
+        //TODO: -
+    }
+    
     func hideLoader() {
         DispatchQueue.main.async {
             if(self.tabBarController != nil) {
@@ -152,4 +175,13 @@ public extension UIViewController {
             }
         }
     }
+    
+    func showToastMessage(_ message: String, and waitForSecondsToHide: Int = 3) {
+        //TODO: -
+    }
+    
+    func hideToast() {
+        //TODO: -
+    }
 }
+
