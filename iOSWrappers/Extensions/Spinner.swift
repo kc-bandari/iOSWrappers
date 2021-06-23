@@ -70,7 +70,12 @@ public extension UIView {
         label.lineBreakMode = .byWordWrapping
         label.backgroundColor = .clear
         label.textColor = UserDefaults.standard.getColorFor(defaultsKeys.messageColor.rawValue) ?? .white
-        label.font = UserDefaults.standard.getFontFor(defaultsKeys.messageFont.rawValue) ?? UIFont.boldSystemFont(ofSize: 12.0)
+        if let font = UserDefaults.standard.getFontFor(defaultsKeys.messageFont.rawValue) {
+            label.font = font
+        } else {
+            label.font = UIFont.boldSystemFont(ofSize: 12.0)
+        }
+        
         label.textAlignment = .center
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false

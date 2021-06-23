@@ -9,9 +9,10 @@ import Foundation
 import UIKit
 public extension UserDefaults {
     func getColorFor(_ key: String) -> UIColor? {
-        guard let data = data(forKey: key),
-              let color = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor else { return nil }
-        return color
+        if let data = data(forKey: key) {
+            return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor
+        }
+        return nil
     }
     
     func setColor(_ color: UIColor?, for key: String) {
