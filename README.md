@@ -10,7 +10,7 @@ Add `pod 'iOSWrappers'` to your *Podfile*.
 Install the pod(s) by running `pod install`.
 Include iOSWrappers wherever you need it with `import iOSWrappers`.
 ```
-## Components
+## Components #1
 ### Spinner:
 >Spinner is an easy-to-use HUD which can be used for ongoing tasks. 
 
@@ -87,3 +87,5 @@ self.hideLoader()
 ```Swift
 self.view.hideLoader()
 ```
+## License
+> This code is distributed under the terms and conditions of the [MIT license](LICENSE).
