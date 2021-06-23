@@ -7,17 +7,19 @@
 
 import Foundation
 import UIKit
-extension UserDefaults {
+public extension UserDefaults {
     func getColorFor(_ key: String) -> UIColor? {
-        if let data = data(forKey: key) {
-            return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor
-        }
-        return nil
+        guard let data = data(forKey: key),
+              let color = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor else { return nil }
+        return color
     }
     
     func setColor(_ color: UIColor?, for key: String) {
-        if let c = color, let data = try? NSKeyedArchiver.archivedData(withRootObject: c, requiringSecureCoding: false) as NSData? {
-            set(data, forKey: key)
+        if let c = color {
+            do {
+                let data = try NSKeyedArchiver.archivedData(withRootObject: c, requiringSecureCoding: false) as NSData?
+                set(data, forKey: key)
+            } catch {}
         }
     }
     
