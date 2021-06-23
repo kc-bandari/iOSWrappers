@@ -1,6 +1,7 @@
 # iOSWrappers 
-Basic components and UI elements for iOS development
-1. Spinner (ActivityIndicator with dimbackground and configurable)
+**Basic components and UI elements for iOS development**
+- Spinner (ActivityIndicator with dimbackground and configurable)
+- Toast (Display configurable toast)
 
 ## Installation
 ### CocoaPods:
@@ -18,8 +19,8 @@ Include iOSWrappers wherever you need it with `import iOSWrappers`.
 #### Configure:
  In `AppDelegate.swift`, configure spinner using `configureSpinner`.
  
-> **Syntax:**
-UIViewController().configureSpinner(dimmerBackgroundColor: `UIColor`, dimmerAlpha: `Double`, indicatorViewBackgroundColor: `UIColor`, indicatorViewAlpha: `Double`, indicatorViewCornerRadius: `Double`, indicatorColor: `UIColor`, messageTextColor: `UIColor`, messageFont: `UIFont`)
+***Syntax:***
+>UIViewController().configureSpinner(dimmerBackgroundColor: `UIColor`, dimmerAlpha: `Double`, indicatorViewBackgroundColor: `UIColor`, indicatorViewAlpha: `Double`, indicatorViewCornerRadius: `Double`, indicatorColor: `UIColor`, messageTextColor: `UIColor`, messageFont: `UIFont`)
 
 ```Swift
 Example:
@@ -44,29 +45,24 @@ If configuration is not defined `Spinner` uses default values.
     
 #### Show: 
 To display Spinner use `showLoader`
+
+***Display on UIViewController***
 ```Swift
-Display on UIViewController
 self.showLoader()
 ```
+***Display in UIView***
 ```Swift
-Display in UIView
 self.view.showLoader()
 ```
 To display Spinner with message on use `showLoaderWithMessage`
+
+***Display on UIViewController***
 ```Swift
-Display on UIViewController
 self.showLoaderWithMessage("Message...")
 ```
+
+***Display in UIView***
 ```Swift
-Display in UIView
 self.view.showLoaderWithMessage("Message...")
 ```
-#### Update: 
-To update message use `updateMessageOnSpinnerOrToast`
-```Swift
-Example:
-self.updateMessageOnSpinnerOrToast("Message...")
-```
-
-
 
