@@ -11,9 +11,7 @@ public extension UserDefaults {
     func getColorFor(_ key: String) -> UIColor? {
         if let data = data(forKey: key) {
             do {
-                if let data = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor {
-                    return data
-                }
+                return try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIColor
             } catch {}
         }
         return nil
