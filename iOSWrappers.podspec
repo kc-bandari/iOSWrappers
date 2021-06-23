@@ -7,7 +7,7 @@ Pod::Spec.new do |spec|
   spec.homepage     = "https://github.com/kc-bandari/iOSWrappers"
   spec.license      = "MIT"
 
-  spec.author             = { "Chaitanya" => "chaitanyab207@gmail.com" }
+  spec.author       = { "Chaitanya" => "chaitanyab207@gmail.com" }
 
   spec.platform     = :ios, "13.0"
 
