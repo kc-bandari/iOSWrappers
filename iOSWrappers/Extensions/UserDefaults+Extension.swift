@@ -16,11 +16,8 @@ extension UserDefaults {
     }
     
     func setColor(_ color: UIColor?, for key: String) {
-        if let c = color {
-            do {
-                let data = try NSKeyedArchiver.archivedData(withRootObject: c, requiringSecureCoding: false) as NSData?
-                set(data, forKey: key)
-            } catch {}
+        if let c = color, let data = try? NSKeyedArchiver.archivedData(withRootObject: c, requiringSecureCoding: false) as NSData? {
+            set(data, forKey: key)
         }
     }
     
