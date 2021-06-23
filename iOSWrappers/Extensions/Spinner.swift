@@ -26,7 +26,7 @@ fileprivate enum defaultsKeys: String {
 }
 
 //MARK: - Loader tags
-extension UIView {
+public extension UIView {
     //MARK: - Declarations - Private
     private var containerView: UIView {
         let view: UIView = UIView()
@@ -65,7 +65,7 @@ extension UIView {
         return view
     }
     
-    var lblMessage: UILabel {
+    private var lblMessage: UILabel {
         let label = UILabel()
         label.lineBreakMode = .byWordWrapping
         label.backgroundColor = .clear
@@ -168,15 +168,19 @@ extension UIView {
     }
     
     //MARK: - Public Methods
-    func displayAnimatedActivityIndicatorView(message: String = "") {
+    func showLoader() {
+        setActivityIndicatorView()
+    }
+    
+    func showLoaderWithMessage(_ message: String) {
         setActivityIndicatorView(message: message)
     }
 
-    func updateMessageOnSpinnerOrToast(_ message: String?) {
+    func updateMessageOnSpinner(_ message: String?) {
         self.updateMessage(message)
     }
     
-    func hideAnimatedActivityIndicatorView() {
+    func hideLoader() {
         removeActivityIndicatorView()
     }
 }
@@ -209,9 +213,9 @@ public extension UIViewController {
     func showLoader() {
         DispatchQueue.main.async {
             if(self.tabBarController != nil) {
-                self.tabBarController?.overlayContainerView.displayAnimatedActivityIndicatorView()
+                self.tabBarController?.overlayContainerView.showLoader()
             } else {
-                self.overlayContainerView.displayAnimatedActivityIndicatorView()
+                self.overlayContainerView.showLoader()
             }
         }
     }
@@ -219,19 +223,19 @@ public extension UIViewController {
     func showLoaderWithMessage(_ message: String) {
         DispatchQueue.main.async {
             if(self.tabBarController != nil) {
-                self.tabBarController?.overlayContainerView.displayAnimatedActivityIndicatorView(message: message)
+                self.tabBarController?.overlayContainerView.showLoaderWithMessage(message)
             } else {
-                self.overlayContainerView.displayAnimatedActivityIndicatorView(message: message)
+                self.overlayContainerView.showLoaderWithMessage(message)
             }
         }
     }
     
-    func updateMessageOnSpinnerOrToast(_ message: String?) {
+    func updateMessageOnSpinner(_ message: String?) {
         DispatchQueue.main.async {
             if(self.tabBarController != nil) {
-                self.tabBarController?.overlayContainerView.updateMessageOnSpinnerOrToast(message)
+                self.tabBarController?.overlayContainerView.updateMessageOnSpinner(message)
             } else {
-                self.overlayContainerView.updateMessageOnSpinnerOrToast(message)
+                self.overlayContainerView.updateMessageOnSpinner(message)
             }
         }
     }
@@ -239,18 +243,10 @@ public extension UIViewController {
     func hideLoader() {
         DispatchQueue.main.async {
             if(self.tabBarController != nil) {
-                self.tabBarController?.overlayContainerView.hideAnimatedActivityIndicatorView()
+                self.tabBarController?.overlayContainerView.hideLoader()
             } else {
-                self.overlayContainerView.hideAnimatedActivityIndicatorView()
+                self.overlayContainerView.hideLoader()
             }
         }
-    }
-    
-    func showToastMessage(_ message: String, and waitForSecondsToHide: Int = 3) {
-        //TODO: -
-    }
-    
-    func hideToast() {
-        //TODO: -
     }
 }
