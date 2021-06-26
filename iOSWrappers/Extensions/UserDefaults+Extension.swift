@@ -25,15 +25,18 @@ public extension UserDefaults {
     }
     
     func getFontFor(_ key: String) -> UIFont? {
-        if let data = data(forKey: key) {
-            return try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIFont
+        if let data = data(forKey: key), let font = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? UIFont {
+            return font
         }
         return nil
     }
     
     func setFont(_ font: UIFont?, for key: String) {
-        if let c = font, let data = try? NSKeyedArchiver.archivedData(withRootObject: c, requiringSecureCoding: false) as NSData? {
-            set(data, forKey: key)
+        if let c = font {
+            do {
+                let data = try NSKeyedArchiver.archivedData(withRootObject: c, requiringSecureCoding: false) as NSData?
+                set(data, forKey: key)
+            } catch {}
         }
     }
     
