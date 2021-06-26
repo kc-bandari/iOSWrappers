@@ -32,11 +32,8 @@ public extension UserDefaults {
     }
     
     func setFont(_ font: UIFont?, for key: String) {
-        if let c = font {
-            do {
-                let data = try NSKeyedArchiver.archivedData(withRootObject: c, requiringSecureCoding: false) as NSData?
-                set(data, forKey: key)
-            } catch {}
+        if let c = font, let data = try? NSKeyedArchiver.archivedData(withRootObject: c, requiringSecureCoding: false) as NSData? {
+            set(data, forKey: key)
         }
     }
     
