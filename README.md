@@ -1,7 +1,10 @@
 # iOSWrappers 
-**Basic components and UI elements for iOS development**
+**Basic components regularly used in iOS development**
+
 - Spinner (ActivityIndicator with dimbackground and configurable)
-- Toast (Display configurable toast)
+- UserDefaults Extension
+    1. Set/Get UIColor
+    2. Set/Get UIFont
 
 ## Installation
 ### CocoaPods:
@@ -15,7 +18,6 @@ Include iOSWrappers wherever you need it with `import iOSWrappers`.
 >Spinner is an easy-to-use HUD which can be used for ongoing tasks. 
 
 #### Usage:
-
 #### Configure:
  In `AppDelegate.swift`, configure spinner using `configureSpinner`.
  
@@ -87,5 +89,33 @@ self.hideLoader()
 ```Swift
 self.view.hideLoader()
 ```
+## Components #2
+### UserDefaults Extension:
+>Extension used for spinner is made open for use. Extension has ability to write and read `UIColor`, `UIFont` and `Double`
+
+#### Usage:
+#### Set/Get UIColor:
+>Set UIColor to defaults and get UIColor from defaults. If UIColor is not available get method returns nil.
+
+***Set UIColor to Defaults***
+```Swift
+UserDefaults.standard.setColor(SOME_COLOR_TO_SAVE, for: SOME_KEY)
+```
+***Get UIColor from Defaults***
+```Swift
+let color = UserDefaults.standard.getColorFor(SOME_KEY)
+```
+#### Set/Get UIFont:
+>Set UIFont to defaults and get UIFont from defaults. If UIColor is not available get method returns nil.
+
+***Set UIFont to Defaults***
+```Swift
+UserDefaults.standard.setFont(SOME_FONT_TO_SAVE, for: SOME_KEY)
+```
+***Get UIFont from Defaults***
+```Swift
+let font = UserDefaults.standard.getFontFor(SOME_KEY)
+```
 ## License
 > This code is distributed under the terms and conditions of the [MIT license](LICENSE).
+
